@@ -8,7 +8,7 @@ class annotation:
     box : list
 
 def getTextFile(file_name, path):
-    return path + '/' + file_name + "/" + file_name + ".txt"
+    return path  + "/" + file_name + ".txt"
 
 def parseTextFile(text_file_name, file_name, path):
     with open(text_file_name) as text_file:
@@ -38,13 +38,13 @@ def parseTextFile(text_file_name, file_name, path):
     return dec
 
 def formDatabase(folder):
-    path = 'data/images/' #+ folder + '/'
+    path = 'data/' #+ folder + '/'
     files = [f.name for f in os.scandir(path) if f.is_dir()]
 
     images_dict = {}
 
     for file in files:
-        text_file_name = getTextFile(file, path)
+        text_file_name = getTextFile(file, 'Annotations/')
         dictionary = parseTextFile(text_file_name, file, path)
 
         for key in dictionary:
@@ -52,10 +52,9 @@ def formDatabase(folder):
 
     return images_dict
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     images_dict = formDatabase('train')
 
-    for key in images_dict:
-        for item in images_dict[key]:
-            print("Key : %s " % key + "Label : %s " % item.label + "Boxes : %s" % item.box)
+    for key in list(images_dict.keys()):
+        print(key, images_dict[key])
