@@ -56,5 +56,5 @@ def formDatabase(folder):
 if __name__ == '__main__':
     images_dict = formDatabase('train')
 
-    for key in list(images_dict.keys()):
-        print(key, images_dict[key])
+    for idx, key in enumerate(list(images_dict.keys())):
+        print(idx, key, images_dict[key])
