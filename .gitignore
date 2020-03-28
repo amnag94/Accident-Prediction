@@ -1,3 +1,5 @@
+
+object_detection/data/
 *.ipynb
 .idea/
 /data
