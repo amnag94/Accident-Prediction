@@ -29,6 +29,14 @@ The new custom dataset `__getitem__` should return:
 
 # WE ARE DOING THIS ONE
 
+## Folder strusture: 
+	1. Accident-prediction
+		1. Object detection (we would be uploading this folder to mycourses)
+			1. we can keep a copy of Data and annotations 
+			2. Mask_RCNN (folder which hold everything the library needs) {not to touch this folder)
+		2. Data (images)
+		3. Annotations
+		
 ## How to Train an Object Detection Model with Keras
 > predict both where the objects are in the image and what  type of objects were detected.
 
