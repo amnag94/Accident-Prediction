@@ -27,6 +27,7 @@ The new custom dataset `__getitem__` should return:
 
 
 
+# WE ARE DOING THIS ONE
 
 ## How to Train an Object Detection Model with Keras
 > predict both where the objects are in the image and what  type of objects were detected.
@@ -53,6 +54,7 @@ Mask RCNN keras model for own object detection tasks
 	2. git clone https://github.com/matterport/Mask_RCNN.git
 	3. cd Mask_RCNN 
 	4. sudo python setup.py install
+
 
 2. How to prepare Dataset for object detection
 	1. getting the dataset together
