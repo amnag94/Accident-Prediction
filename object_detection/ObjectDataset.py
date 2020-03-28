@@ -23,7 +23,7 @@ class ObjectDataset(Dataset):
     def load_mask(self, image_id):
         info = self.image_info[image_id]
         annotation = info['annotation']
-        h, w = 100, 100
+        h, w = 720, 1280
         boxes, labels = self.extract_boxes(annotation)
         masks = np.zeros([h, w, len(boxes)], dtype='uint8')
         class_ids = list()
