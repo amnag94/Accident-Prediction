@@ -1,9 +1,9 @@
 # Author : Ketan Kokane <kk7471@rit.edu>
 import numpy as np
-
 from ParseTextFile import formDatabase
 from mrcnn.utils import Dataset
-
+from mrcnn.visualize import display_instances
+from mrcnn.utils import extract_bboxes
 
 class ObjectDataset(Dataset):
 
@@ -57,3 +57,13 @@ if __name__ == '__main__':
     train_set.load_dataset('')
     train_set.prepare()
     print('Train: %d' % len(train_set.image_ids))
+    # define image id
+    image_id = 1
+    # load the image
+    image = train_set.load_image(image_id)
+    # load the masks and the class ids
+    mask, class_ids = train_set.load_mask(image_id)
+    # extract bounding boxes from the masks
+    bbox = extract_bboxes(mask)
+    # display image with masks and bounding boxes
+    display_instances(image, bbox, mask, class_ids, train_set.class_names)
