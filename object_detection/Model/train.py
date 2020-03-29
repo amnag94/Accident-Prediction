@@ -8,7 +8,7 @@ from mrcnn.model import MaskRCNN
 def main():
     config = ObjectConfig()
     model = MaskRCNN(mode='training', model_dir='./', config=config)
-    model.load_weights('mrcnn/mask_rcnn_coco.h5', by_name=True,
+    model.load_weights('../mrcnn/mask_rcnn_coco.h5', by_name=True,
                        exclude=["mrcnn_class_logits", "mrcnn_bbox_fc",
                                 "mrcnn_bbox", "mrcnn_mask"])
 
@@ -18,7 +18,7 @@ def main():
     print('Train: %d' % len(train_set.image_ids))
 
     model.train(train_set, train_set, learning_rate=config.LEARNING_RATE,
-                epochs=5,
+                epochs=1,
                 layers='heads')
 
 

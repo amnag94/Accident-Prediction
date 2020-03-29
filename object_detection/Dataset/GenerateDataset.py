@@ -69,7 +69,7 @@ def copy_files(dec, train_test):
     new_image_path = '../../generated_data/images/' + train_test
     annotation_file_path = '../../generated_data/annotations/' + train_test
     old_image_path = '../../data/'
-    for key in sortedKeys[:100]:
+    for key in sortedKeys:
         img_file = key
         annotation_file = key.split('.')[0] + '.txt'
         # print(old_image_path + img_file, new_image_path + img_file,
@@ -107,7 +107,7 @@ def make_dirs():
 
 
 def generate_test_set(training_set, car, not_car):
-    training_set = {}
+    test_set = {}
 
 
     for dec in [car, not_car]:
@@ -116,18 +116,18 @@ def generate_test_set(training_set, car, not_car):
             if idx > 50:
                 break
             if key not in training_set.keys():
-                training_set[key] = dec[key]
+                test_set[key] = dec[key]
                 idx += 1
-    print(len(training_set))
-    return training_set
+    print(len(test_set))
+    return test_set
 
 
 if __name__ == '__main__':
     make_dirs()
     car, not_car = parse_annotations()
     training_set = merge_two_dictionary(car,not_car)
+    copy_files(training_set, 'train')
     print(len(training_set))
     print(training_set)
     testing_set = generate_test_set(training_set, car, not_car)
-    copy_files(training_set, 'train')
     copy_files(testing_set, 'test')

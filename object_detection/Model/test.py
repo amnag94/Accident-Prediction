@@ -5,6 +5,8 @@ from Configs.PredictionConfig import PredictionConfig
 from Dataset.ObjectDataset import ObjectDataset
 from mrcnn.model import MaskRCNN, load_image_gt, mold_image
 from mrcnn.utils import compute_ap
+from matplotlib import pyplot
+from matplotlib.patches import Rectangle
 
 
 def evaluate_model(dataset, model, cfg):
@@ -12,7 +14,7 @@ def evaluate_model(dataset, model, cfg):
     for image_id in dataset.image_ids:
         # load image, bounding boxes and masks for the image id
         image, image_meta, gt_class_id, gt_bbox, gt_mask = load_image_gt(
-                dataset, cfg, image_id, use_mini_mask=False)
+            dataset, cfg, image_id, use_mini_mask=False)
         # convert pixel values (e.g. center)
         scaled_image = mold_image(image, cfg)
         # convert image into one sample
@@ -36,15 +38,60 @@ def main():
 
     model = MaskRCNN(mode='inference', model_dir='./', config=config)
     # my model
-    model.load_weights('mrcnn/mask_rcnn_coco.h5', by_name=True)
+    model.load_weights('mask_rcnn_object_cfg_0001_proper.h5', by_name=True)
 
     test_set = ObjectDataset()
     test_set.load_dataset('test')
     test_set.prepare()
 
-    test_mAP = evaluate_model(test_set, model, config)
-    print("Test mAP: %.3f" % test_mAP)
+    print('Test: %d' % len(test_set.image_ids))
+    plot_actual_vs_predicted(test_set, model, config)
+    # test_mAP = evaluate_model(test_set, model, config)
+    # print("Test mAP: %.3f" % test_mAP)
+
+
+
+# plot a number of photos with ground truth and predictions
+def plot_actual_vs_predicted(dataset, model, cfg, n_images=1):
+    # load image and mask
+    for i in range(n_images):
+        # load the image and mask
+        image = dataset.load_image(i)
+        mask, _ = dataset.load_mask(i)
+        # convert pixel values (e.g. center)
+        scaled_image = mold_image(image, cfg)
+        # convert image into one sample
+        sample = np.expand_dims(scaled_image, 0)
+        # make prediction
+        yhat = model.detect(sample, verbose=0)[0]
+        # define subplot
+        pyplot.subplot(n_images, 2, i * 2 + 1)
+        # plot raw pixel data
+        pyplot.imshow(image)
+        pyplot.title('Actual')
+        # plot masks
+        for j in range(mask.shape[2]):
+            pyplot.imshow(mask[:, :, j], cmap='gray', alpha=0.3)
+        # get the context for drawing boxes
+        pyplot.subplot(n_images, 2, i * 2 + 2)
+        # plot raw pixel data
+        pyplot.imshow(image)
+        pyplot.title('Predicted')
+        ax = pyplot.gca()
+        # plot each box
+        for box in yhat['rois']:
+            # get coordinates
+            y1, x1, y2, x2 = box
+            # calculate width and height of the box
+            width, height = x2 - x1, y2 - y1
+            # create the shape
+            rect = Rectangle((x1, y1), width, height, fill=False, color='red')
+            # draw the box
+            ax.add_patch(rect)
+    # show the figure
+    pyplot.show()
 
 
 if __name__ == '__main__':
+
     main()
