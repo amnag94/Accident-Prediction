@@ -37,6 +37,11 @@ def parse_annotations():
     return dec
 
 
+def write_annotations(data, file_name):
+    with open(file_name, 'w') as file:
+        file.writelines(repr(data))
+
+
 def copy_files(dec, train_test):
     sortedKeys = list(dec.keys())
     sortedKeys.sort()
@@ -45,20 +50,20 @@ def copy_files(dec, train_test):
     new_image_path = '../../generated_data/images/' + train_test
     annotation_file_path = '../../generated_data/annotations/' + train_test
     old_image_path = '../../data/'
-    for key in sortedKeys[:5]:
+    for key in sortedKeys[:100]:
         img_file = key
         annotation_file = key.split('.')[0] + '.txt'
-
-
-        print(old_image_path + img_file, new_image_path + img_file,
-              annotation_file_path + annotation_file)
+        # print(old_image_path + img_file, new_image_path + img_file,
+        #       annotation_file_path + annotation_file)
         shutil.copyfile(old_image_path + img_file, new_image_path + img_file)
+        write_annotations(dec[key], annotation_file_path + annotation_file)
 
 
 def make_image_folders(img_ann, train_test):
     for dir in range(41, 52):
         path = '../../generated_data/' + img_ann + train_test + '/00' + str(dir)
         os.mkdir(path)
+
 
 def make_dirs():
     path = '../../generated_data'
@@ -82,13 +87,11 @@ def make_dirs():
     make_image_folders('annotations/', 'test/')
 
 
-
 if __name__ == '__main__':
-    make_image_folders('image/', 'train/')
     # make_dirs()
-    # dec = parse_annotations()
-    # print(len(dec))
-    # print(dec)
+    dec = parse_annotations()
+    print(len(dec))
+    print(dec)
     #
-    # copy_files(dec, 'train')
+    copy_files(dec, 'train')
     # copy_files(dec, 'test')
