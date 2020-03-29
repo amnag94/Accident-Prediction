@@ -55,6 +55,6 @@ if __name__ == '__main__':
     # my model
     model.load_weights(TRAINED_MODEL_PATH, by_name=True)
 
-    image_name = '.002210.jpg'
+    image_name = '002210.jpg'
     image = load_image('../image/' + image_name)
     plot_actual_vs_predicted(image, model, config)
