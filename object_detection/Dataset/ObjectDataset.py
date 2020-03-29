@@ -11,9 +11,8 @@ class ObjectDataset(Dataset):
 
     def load_dataset(self, dataset_dir, is_train=True):
         self.add_class("dataset", 1, "Car")
-        # self.add_class("dataset", 2, "Truck")
-        self.add_class("dataset", 3, "Pedestrian")
-        # self.add_class("dataset", 4, "Bike")
+        self.add_class("dataset", 2, "Object But Not Car")
+
 
         image_dict = get_dectionary_from_annotations(dataset_dir)
 
