@@ -9,23 +9,23 @@ from Dataset.Constants import GENERATED_FILE_PATH, Annotation
 def get_dectionary_from_annotations(tt):
     Annotation('l', [])
     dec = {}
-    print(GENERATED_FILE_PATH + 'annotations/' +
-          tt)
-    print(os.listdir('.'))
-    for subdir, dirs, files in os.walk(GENERATED_FILE_PATH + 'annotations/' +
-                                       tt):
-        for _dir in dirs:
-            for _subdir, _dirs, _files in os.walk(os.path.join(subdir + _dir)):
-                for _file in _files:
-                    with open(_subdir + os.sep + _file) as annotation_file:
-                        list_of_annotations = eval(annotation_file.readline(
+    print(GENERATED_FILE_PATH + 'annotations/' + tt)
+    print(os.listdir(GENERATED_FILE_PATH + 'annotations/' + tt))
+    path = GENERATED_FILE_PATH + 'annotations/' + tt
 
-                        ).strip())
-                        file_path = _subdir + os.sep + _file
-                        file_path = file_path.replace('annotations',
-                                                      'images').replace('.txt',
-                                                                        '.jpg')
-                        dec[file_path] = list_of_annotations
+    for _dir in os.listdir((GENERATED_FILE_PATH + 'annotations/' + tt)):
+        # print(path + '/'+ _dir)
+        for _subdir, _dirs, _files in os.walk(path + '/' + _dir):
+            for _file in _files:
+                with open(_subdir + os.sep + _file) as annotation_file:
+                    list_of_annotations = eval(annotation_file.readline(
+
+                    ).strip())
+                    file_path = _subdir + os.sep + _file
+                    file_path = file_path.replace('annotations',
+                                                  'images').replace('.txt',
+                                                                    '.jpg')
+                    dec[file_path] = list_of_annotations
     return dec
 
 
