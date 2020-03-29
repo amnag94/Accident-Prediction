@@ -13,7 +13,6 @@ class ObjectDataset(Dataset):
         self.add_class("dataset", 1, "Car")
         self.add_class("dataset", 2, "Object But Not Car")
 
-
         image_dict = get_dectionary_from_annotations(dataset_dir)
 
         for idx, key in enumerate(list(image_dict.keys())):

@@ -2,6 +2,7 @@
 
 import os
 import shutil
+
 from Dataset.Constants import Annotation
 
 
@@ -37,11 +38,11 @@ def parse_annotations():
                         for frame in frames.strip().split("',"):
                             frame = frame.strip().replace("'", "")
                             img = frame.split(':')[0]
-                            box_cordinate =  eval(frame.split(':')[1].strip())
+                            box_cordinate = eval(frame.split(':')[1].strip())
                             img = file.split('.')[0] + '/' + img + '.jpg'
                             if obj == 'Car':
                                 add_to_dectionary(car, box_cordinate, img,
-                                                  'Car' )
+                                                  'Car')
                             else:
                                 add_to_dectionary(not_car, box_cordinate, img,
                                                   'Object But Not Car')
@@ -91,7 +92,7 @@ def make_dirs():
     os.mkdir(path)
     path = '../../generated_data/images/train'
     os.mkdir(path)
-    make_image_folders('images/','train/')
+    make_image_folders('images/', 'train/')
     path = '../../generated_data/images/test'
     os.mkdir(path)
     make_image_folders('images/', 'test/')
@@ -109,7 +110,6 @@ def make_dirs():
 def generate_test_set(training_set, car, not_car):
     test_set = {}
 
-
     for dec in [car, not_car]:
         idx = 1
         for key in dec.keys():
@@ -125,7 +125,7 @@ def generate_test_set(training_set, car, not_car):
 if __name__ == '__main__':
     make_dirs()
     car, not_car = parse_annotations()
-    training_set = merge_two_dictionary(car,not_car)
+    training_set = merge_two_dictionary(car, not_car)
     copy_files(training_set, 'train')
     print(len(training_set))
     print(training_set)
