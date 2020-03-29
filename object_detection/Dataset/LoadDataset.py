@@ -15,7 +15,7 @@ def get_dectionary_from_annotations(tt):
     for subdir, dirs, files in os.walk(GENERATED_FILE_PATH + 'annotations/' +
                                        tt):
         for _dir in dirs:
-            for _subdir, _dirs, _files in os.walk(subdir + os.sep + _dir):
+            for _subdir, _dirs, _files in os.walk(os.path.join(subdir + _dir)):
                 for _file in _files:
                     with open(_subdir + os.sep + _file) as annotation_file:
                         list_of_annotations = eval(annotation_file.readline(
