@@ -1,9 +1,11 @@
 # Author : Ketan Kokane <kk7471@rit.edu>
 import numpy as np
-from Dataset.ParseTextFile import formDatabase
+
+from Dataset.LoadDataset import *
 from mrcnn.utils import Dataset
-from mrcnn.visualize import display_instances
 from mrcnn.utils import extract_bboxes
+from mrcnn.visualize import display_instances
+
 
 class ObjectDataset(Dataset):
 
@@ -13,8 +15,7 @@ class ObjectDataset(Dataset):
         self.add_class("dataset", 3, "Pedestrian")
         self.add_class("dataset", 4, "Bike")
 
-
-        image_dict = formDatabase('train')
+        image_dict = get_dectionary_from_annotations(dataset_dir)
 
         for idx, key in enumerate(list(image_dict.keys())):
             self.add_image('dataset', image_id=idx, path=key,
@@ -42,8 +43,6 @@ class ObjectDataset(Dataset):
         return info['path']
 
     def extract_boxes(self, annotations):
-        # parse the annotations
-        # how to assign box and label ?
         boxes = []
         labels = []
         for an in annotations:
@@ -54,7 +53,7 @@ class ObjectDataset(Dataset):
 
 if __name__ == '__main__':
     train_set = ObjectDataset()
-    train_set.load_dataset('')
+    train_set.load_dataset('train')
     train_set.prepare()
     print('Train: %d' % len(train_set.image_ids))
     # define image id

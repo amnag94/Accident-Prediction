@@ -2,13 +2,7 @@
 
 import os
 import shutil
-from dataclasses import dataclass
-
-
-@dataclass
-class Annotation:
-    label: str
-    box: list
+from Dataset.Constants import Annotation
 
 
 def parse_annotations():
@@ -28,7 +22,7 @@ def parse_annotations():
                         for frame in frames.strip().split("',"):
                             frame = frame.strip().replace("'", "")
                             img = frame.split(':')[0]
-                            box_cordinate = frame.split(':')[1]
+                            box_cordinate =  eval(frame.split(':')[1].strip())
                             img = file.split('.')[0] + '/' + img + '.jpg'
                             if img in dec:
                                 dec[img].append(Annotation(obj, box_cordinate))
@@ -88,10 +82,10 @@ def make_dirs():
 
 
 if __name__ == '__main__':
-    # make_dirs()
+    make_dirs()
     dec = parse_annotations()
     print(len(dec))
     print(dec)
     #
     copy_files(dec, 'train')
-    # copy_files(dec, 'test')
+    copy_files(dec, 'test')

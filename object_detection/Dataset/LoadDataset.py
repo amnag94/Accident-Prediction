@@ -1,24 +1,26 @@
 # Author : Ketan Kokane <kk7471@rit.edu>
+
+
 import os
-from dataclasses import dataclass
 
-
-@dataclass
-class Annotation:
-    label: str
-    box: list
+from Dataset.Constants import GENERATED_FILE_PATH, Annotation
 
 
 def get_dectionary_from_annotations(tt):
+    Annotation('l', [])
     dec = {}
-    for subdir, dirs, files in os.walk(
-            '../../generated_data/annotations/' + tt):
+    print(GENERATED_FILE_PATH + 'annotations/' +
+          tt)
+    print(os.listdir('.'))
+    for subdir, dirs, files in os.walk(GENERATED_FILE_PATH + 'annotations/' +
+                                       tt):
         for _dir in dirs:
             for _subdir, _dirs, _files in os.walk(subdir + os.sep + _dir):
                 for _file in _files:
                     with open(_subdir + os.sep + _file) as annotation_file:
-                        list_of_annotations = eval(
-                            annotation_file.readline().strip())
+                        list_of_annotations = eval(annotation_file.readline(
+
+                        ).strip())
                         file_path = _subdir + os.sep + _file
                         file_path = file_path.replace('annotations',
                                                       'images').replace('.txt',
