@@ -19,8 +19,9 @@ def parseTextFile(text_file_name, file_name, path):
                 obj = line.split(',')[0]
                 frames = line[line.find('{') + 1: line.find('}')]
 
-                lst = []
+
                 for frame in frames.split("',"):
+                    lst = []
                     frame = frame.strip().replace("'", "")
                     img = frame.split(':')[0]
                     coor = frame.split(':')[1]
