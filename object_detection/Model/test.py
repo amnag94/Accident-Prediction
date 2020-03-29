@@ -1,8 +1,9 @@
 # Author : Ketan Kokane <kk7471@rit.edu>
-from Dataset.ObjectDataset import ObjectDataset
+import numpy as np
+
 from Configs.PredictionConfig import PredictionConfig
+from Dataset.ObjectDataset import ObjectDataset
 from mrcnn.model import MaskRCNN, load_image_gt, mold_image
-import  numpy as np
 from mrcnn.utils import compute_ap
 
 
@@ -11,7 +12,7 @@ def evaluate_model(dataset, model, cfg):
     for image_id in dataset.image_ids:
         # load image, bounding boxes and masks for the image id
         image, image_meta, gt_class_id, gt_bbox, gt_mask = load_image_gt(
-            dataset, cfg, image_id, use_mini_mask=False)
+                dataset, cfg, image_id, use_mini_mask=False)
         # convert pixel values (e.g. center)
         scaled_image = mold_image(image, cfg)
         # convert image into one sample
@@ -38,12 +39,11 @@ def main():
     model.load_weights('mrcnn/mask_rcnn_coco.h5', by_name=True)
 
     test_set = ObjectDataset()
-    test_set.load_dataset('')
+    test_set.load_dataset('test')
     test_set.prepare()
 
     test_mAP = evaluate_model(test_set, model, config)
     print("Test mAP: %.3f" % test_mAP)
-
 
 
 if __name__ == '__main__':
