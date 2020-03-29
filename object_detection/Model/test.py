@@ -45,14 +45,15 @@ def main():
     test_set.prepare()
 
     print('Test: %d' % len(test_set.image_ids))
-    plot_actual_vs_predicted(test_set, model, config)
+    for i in range(10, 25,4):
+        plot_actual_vs_predicted(test_set, model, config, i )
     # test_mAP = evaluate_model(test_set, model, config)
     # print("Test mAP: %.3f" % test_mAP)
 
 
 # plot a number of photos with ground truth and predictions
-def plot_actual_vs_predicted(dataset, model, cfg):
-    i = 70
+def plot_actual_vs_predicted(dataset, model, cfg, i):
+
     image = dataset.load_image(i)
     mask, _ = dataset.load_mask(i)
     # convert pixel values (e.g. center)
@@ -64,15 +65,15 @@ def plot_actual_vs_predicted(dataset, model, cfg):
 
     # print(yhat)
     # # define subplot
-    pyplot.subplot(121)
+    # pyplot.subplot(121)
     # # plot raw pixel data
-    pyplot.imshow(image)
-    pyplot.title('Actual')
+    # pyplot.imshow(image)
+    # pyplot.title('Actual')
     # # plot masks
-    for j in range(mask.shape[2]):
-        pyplot.imshow(mask[:, :, j], cmap='gray', alpha=0.3, interpolation='nearest')
-    # # get the context for drawing boxes
-    pyplot.subplot(122)
+    # for j in range(mask.shape[2]):
+    #     pyplot.imshow(mask[:, :, j], cmap='gray', alpha=0.3, interpolation='nearest')
+    # # # get the context for drawing boxes
+    # pyplot.subplot(122)
     # # plot raw pixel data
     pyplot.imshow(image, interpolation='nearest')
     pyplot.title('Predicted')
