@@ -50,48 +50,48 @@ def main():
     # print("Test mAP: %.3f" % test_mAP)
 
 
-
 # plot a number of photos with ground truth and predictions
-def plot_actual_vs_predicted(dataset, model, cfg, n_images=1):
-    # load image and mask
-    for i in range(n_images):
-        # load the image and mask
-        image = dataset.load_image(i)
-        mask, _ = dataset.load_mask(i)
-        # convert pixel values (e.g. center)
-        scaled_image = mold_image(image, cfg)
-        # convert image into one sample
-        sample = np.expand_dims(scaled_image, 0)
-        # make prediction
-        yhat = model.detect(sample, verbose=0)[0]
-        # define subplot
-        pyplot.subplot(n_images, 2, i * 2 + 1)
-        # plot raw pixel data
-        pyplot.imshow(image)
-        pyplot.title('Actual')
-        # plot masks
-        for j in range(mask.shape[2]):
-            pyplot.imshow(mask[:, :, j], cmap='gray', alpha=0.3)
-        # get the context for drawing boxes
-        pyplot.subplot(n_images, 2, i * 2 + 2)
-        # plot raw pixel data
-        pyplot.imshow(image)
-        pyplot.title('Predicted')
-        ax = pyplot.gca()
-        # plot each box
-        for box in yhat['rois']:
-            # get coordinates
-            y1, x1, y2, x2 = box
-            # calculate width and height of the box
-            width, height = x2 - x1, y2 - y1
-            # create the shape
-            rect = Rectangle((x1, y1), width, height, fill=False, color='red')
-            # draw the box
-            ax.add_patch(rect)
-    # show the figure
+def plot_actual_vs_predicted(dataset, model, cfg):
+    i = 70
+    image = dataset.load_image(i)
+    mask, _ = dataset.load_mask(i)
+    # convert pixel values (e.g. center)
+    scaled_image = mold_image(image, cfg)
+    # convert image into one sample
+    sample = np.expand_dims(scaled_image, 0)
+    # make prediction
+    yhat = model.detect(sample, verbose=0)[0]
+
+    # print(yhat)
+    # # define subplot
+    pyplot.subplot(121)
+    # # plot raw pixel data
+    pyplot.imshow(image)
+    pyplot.title('Actual')
+    # # plot masks
+    for j in range(mask.shape[2]):
+        pyplot.imshow(mask[:, :, j], cmap='gray', alpha=0.3, interpolation='nearest')
+    # # get the context for drawing boxes
+    pyplot.subplot(122)
+    # # plot raw pixel data
+    pyplot.imshow(image, interpolation='nearest')
+    pyplot.title('Predicted')
+    ax = pyplot.gca()
+    # plot each box
+    color = ['','red', 'blue']
+    for idx in range(len(yhat['rois'])):
+        box = yhat['rois'][idx]
+        # get coordinates
+        y1, x1, y2, x2 = box
+        # calculate width and height of the box
+        width, height = x2 - x1, y2 - y1
+        # create the shape
+        rect = Rectangle((x1, y1), width, height, fill=False, color= color[yhat['class_ids'][idx]] )
+        # draw the box
+        ax.add_patch(rect)
+    # # show the figure
     pyplot.show()
 
 
 if __name__ == '__main__':
-
     main()
