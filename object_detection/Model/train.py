@@ -1,6 +1,6 @@
 # Author : Ketan Kokane <kk7471@rit.edu>
-from ObjectConfig import ObjectConfig
-from ObjectDataset import ObjectDataset
+from Configs.ObjectConfig import ObjectConfig
+from Dataset.ObjectDataset import ObjectDataset
 from mrcnn.model import MaskRCNN, load_image_gt, mold_image
 from mrcnn.utils import compute_ap
 import numpy as np

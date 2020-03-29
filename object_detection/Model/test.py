@@ -1,6 +1,6 @@
 # Author : Ketan Kokane <kk7471@rit.edu>
-from ObjectDataset import ObjectDataset
-from PredictionConfig import PredictionConfig
+from Dataset.ObjectDataset import ObjectDataset
+from Configs.PredictionConfig import PredictionConfig
 from mrcnn.model import MaskRCNN, load_image_gt, mold_image
 import  numpy as np
 from mrcnn.utils import compute_ap

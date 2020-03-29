@@ -1,6 +1,6 @@
 # Author : Ketan Kokane <kk7471@rit.edu>
 import numpy as np
-from ParseTextFile import formDatabase
+from Dataset.ParseTextFile import formDatabase
 from mrcnn.utils import Dataset
 from mrcnn.visualize import display_instances
 from mrcnn.utils import extract_bboxes
