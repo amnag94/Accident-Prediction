@@ -1,6 +1,8 @@
 generated_data/
+AccidentAnticipation/dataset
+AccidentAnticipation/trained_models
+object_detection
 object_detection/data/
-*.ipynb
 .idea/
 /data
 # Byte-compiled / optimized / DLL files
