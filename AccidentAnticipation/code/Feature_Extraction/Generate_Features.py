@@ -11,10 +11,11 @@ def get_features_tensors(image):
 
     :param image: image read using PIL, has to be 3 * H * W
     :return: return torch tensor features created using VGG model
+    [1 * 4096]
     """
     vgg = getModel('../' + MODEL_PATH)
     input_tensor = preprocess(image)
-    # return [3, 244, 244]
+    # return [1 * 4096]
     # unsqueeze turns it into [1, 3, 244, 244] which can be thought of batch
     # size of 1
     input_batch = input_tensor.unsqueeze(0)
@@ -28,6 +29,7 @@ def get_features_tensors_for_video_clip(video_clip):
 
     :param image: image read using PIL, has to be 3 * H * W
     :return: return torch tensor features created using VGG model
+    op [10, 4096] for an video clip of length 10, meaning 10 frames
     """
     vgg = getModel('../' + MODEL_PATH)
     arr = []
