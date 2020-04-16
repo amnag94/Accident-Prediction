@@ -60,8 +60,8 @@ def Test_Model():
     print(features.shape)
 
 
-def getModel():
-    loaded_model = torch.load(MODEL_PATH)
+def getModel(path ):
+    loaded_model = torch.load(path)
     return loaded_model
 
 
