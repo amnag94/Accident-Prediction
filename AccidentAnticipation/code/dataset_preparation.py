@@ -3,11 +3,12 @@ import pandas as pd
 import shutil, os
 
 def parseAnnotation(file_annotation):
+    objects = ['Car', 'Truck', 'Bike', 'Pedestrian']
     clips = []
     with open(file_annotation, "r") as annotation:
         for line in annotation:
             parts = line.split(",")
-            if parts[0][0:2] == "00":
+            if parts[0] not in objects:
                 clips.append({'start': parts[0], 'crash': parts[1]})
     return clips
 
