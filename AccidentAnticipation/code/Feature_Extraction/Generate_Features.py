@@ -3,7 +3,7 @@
 import torch
 from PIL import Image
 
-from Feature_Extraction.VGG_16 import MODEL_PATH, preprocess, getModel
+from Feature_Extraction.VGG_16 import MODEL_PATH, preprocess, getModel, VGG_16
 
 
 def get_features_tensors(image):

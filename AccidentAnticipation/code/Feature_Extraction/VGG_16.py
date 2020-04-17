@@ -54,7 +54,6 @@ def Test_Model():
     input_image = Image.open(img_path)
     # the preprocess pipeline on the image
     input_tensor = preprocess(input_image)
-    # I forgot what this does
     input_batch = input_tensor.unsqueeze(0)
     features = loaded_model(input_batch)
     print(features.shape)
