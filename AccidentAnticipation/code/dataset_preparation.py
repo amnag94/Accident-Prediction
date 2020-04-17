@@ -35,9 +35,10 @@ def findPositions(start, crash, files):
     return start_pos, crash_pos
 
 
-def findFrames(clip, directory_path, clip_path):
-    start_number = int(clip['start'])
-    crash_number = int(clip['crash'])
+def findFrames(clip, directory_path, clip_path, crash_distance):
+    start_number = (int)(clip['start'])
+    crash_number = (int)(clip['crash'])
+    probabilities = []
 
     for subdirs, dirs, files in os.walk(directory_path):
 
@@ -48,25 +49,39 @@ def findFrames(clip, directory_path, clip_path):
         for position in range(start_pos, crash_pos + 1):
             shutil.copy(directory_path + files[position], clip_path)
 
+            if (crash_pos - position) < crash_distance:
+                probabilities.append(1)
+            else:
+                probabilities.append(0)
 
-def storeClip(clip, directory_path, storage_path, clip_number):
+    return probabilities
+
+
+def storeClip(clip, directory_path, storage_path, groundtruth_path, clip_number, crash_distance):
     clip_dir = 'clip_' + str(clip_number) + '/'
     clip_path = storage_path + clip_dir
     os.mkdir(clip_path)
 
-    findFrames(clip, directory_path, clip_path)
+    clip_probs = np.array(findFrames(clip, directory_path, clip_path, crash_distance))
+
+    groundtruth_file = groundtruth_path + 'clip_' + str(clip_number) + '.txt'
+    np.savetxt(groundtruth_file, clip_probs)
 
 
 def main():
     path = "../data/images/"
+    crash_distance = 10
 
     dataset_dir = '../dataset/'
     train_dir = dataset_dir + 'train/'
     videoclips_dir = train_dir + 'videoclips/'
+    groundtruths_dir = train_dir + 'groundtruth/'
 
     os.mkdir(dataset_dir)
     os.mkdir(train_dir)
+
     os.mkdir(videoclips_dir)
+    os.mkdir(groundtruths_dir)
 
     all_clips = []
     clip_number = 0
@@ -77,7 +92,9 @@ def main():
 
             for clip in clips:
                 clip_number += 1
-                storeClip(clip, directory_path, videoclips_dir, clip_number)
+
+                # Store clip frames and groundtruths
+                storeClip(clip, directory_path, videoclips_dir, groundtruths_dir, clip_number, crash_distance)
                 print(clip)
 
             all_clips.append(clips)
