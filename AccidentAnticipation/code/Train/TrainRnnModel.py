@@ -2,33 +2,33 @@
 
 
 import os
+import random
 
-import torch
-import torch.nn as nn
-from PIL import Image
+import numpy as np
 
-from Feature_Extraction.VGG_16 import MODEL_PATH
-
-
-
-
+from Feature_Extraction.VGG_16 import *
+from Feature_Extraction.Generate_Features import *
+from Train.RNN import *
 
 n_hidden = 128
-
-rnn = RNN(4096, 128)
-
 learning_rate = 0.005
+epochs = 3
 
-
-# If set too high, it might explode. If too low, it might not learn
-
-def _train(true_value_tensor, video_sequence_tensor):
+# TODO: add Exponential loss, and move it to CUDA
+def _train(video_sequence_tensor, true_value_tensor, rnn):
+    """
+    This function scope is over a video clip,
+    its supposed to get a video frame tensor generated using Genaret_feature
+    :param true_value_tensor:
+    :param video_sequence_tensor: [n, 4096], where n is the length of video
+    sequence
+    :return:
+    """
     hidden = rnn.initHidden()
-
     rnn.zero_grad()
 
     for i in range(video_sequence_tensor.size()[0]):
-        # for every frame in video sequence
+        # for ith frame in the video frame
         prediction_tensor, hidden = rnn(video_sequence_tensor[i], hidden)
     # get prediction for every frame
 
@@ -40,7 +40,34 @@ def _train(true_value_tensor, video_sequence_tensor):
     for p in rnn.parameters():
         p.data.add_(-learning_rate, p.grad.data)
 
-    return prediction_tensor, loss.item()  # return final predicted and total loss
+    return loss.item()  # return  total loss for the current video sequence
+
+
+def train():
+    # load the dataset,
+    dataset = load_dataset()
+    # create the model
+
+    rnn = RNN(4096, n_hidden)
+
+    for epoch in range(1, epochs + 1):
+        random.shuffle(dataset)  # random the video clips (so the model does not
+        # memorize anything
+
+        for data_item in dataset:
+            video_clip = get_video_clip_from_training_set(data_item[0])
+            targets = get_targets(data_item[1])
+
+            feature_tensors = get_features_tensors_for_video_clip(video_clip)
+
+            loss = _train(feature_tensors, targets, rnn )
+
+            # print(data_item[0], data_item[1])
+
+            # manage some print statement
+    # print some stats after every epoch
+    # save the model after every epoch
+    # use state_dict to store the model and not the entire model
 
 
 def get_video_clip_from_training_set(video_clip_path):
@@ -58,12 +85,18 @@ def get_video_clip_from_training_set(video_clip_path):
     return frames
 
 
-def train():
-    vgg_model = torch.load('../' + MODEL_PATH)
-    hidden_state = torch.zeros(128, dtype=torch.int32)
-
-    for video_clip_path in [1,2,3]:
-        frames = get_video_clip_from_training_set(video_clip_path)
-
+def load_dataset():
+    lst = [('clip1', 'clip1targets.txt'),
+           ('clip2', 'clip2targets.txt'),
+           ('clip3', 'clip3targets.txt')]
+    return lst
 
 
+def get_targets(file_path):
+    return np.array([0, 0, 0, 0, 1, 1, 1])
+
+
+if __name__ == '__main__':
+    # when this script is executed, it is supposed to generate a model file
+    # using the train portion of the dataset
+    train()
