@@ -5,7 +5,8 @@ import numpy as np
 import torch
 from PIL import Image
 
-from Feature_Extraction.VGG_16 import preprocess, getModel, MODEL_PATH
+from Feature_Extraction.VGG_16 import preprocess, getModel, MODEL_PATH, VGG_16
+from Feature_Extraction.Generate_Features import get_features_tensors
 
 
 def get_random_video_clip():
@@ -24,19 +25,6 @@ def get_random_video_clip():
     return frames
 
 
-def get_features_from_vgg_16(image_frame, model):
-    """
-
-    :param image_frame:
-    :param model:
-    :return:
-    """
-    image_tensor = preprocess(image_frame)
-    image_tensor_batch = image_tensor.unsqueeze(0)
-    feature_tensor = model(image_tensor_batch)
-    return feature_tensor
-
-
 def rnn_model(features, hidden_state, train=False):
     output_proba = random.random()
     return output_proba, np.random.rand(128)
@@ -49,12 +37,13 @@ def predict():
     """
 
     frames = get_random_video_clip()
-    model = getModel('../' + MODEL_PATH)
     hidden_state = torch.zeros(128, dtype=torch.int32)
 
     # plt.ion()
+
     for image_frame in frames:
-        feature_tensor = get_features_from_vgg_16(image_frame, model)
+        feature_tensor = get_features_tensors(image_frame)
+        print(feature_tensor.shape)
         accident_proba, hidden_state = rnn_model(feature_tensor, hidden_state,
                                                  train=False)
         # plt.close()
