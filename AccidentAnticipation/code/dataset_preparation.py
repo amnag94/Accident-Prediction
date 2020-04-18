@@ -70,36 +70,57 @@ def storeClip(clip, directory_path, storage_path, groundtruth_path, clip_number,
 
 def main():
     path = "../data/images/"
+
+    # Modify for threshold of accident since frame
     crash_distance = 10
 
     dataset_dir = '../dataset/'
     train_dir = dataset_dir + 'train/'
-    videoclips_dir = train_dir + 'videoclips/'
-    groundtruths_dir = train_dir + 'groundtruth/'
+    test_dir = dataset_dir + 'test/'
+
+    videoclips_dir = 'videoclips/'
+    groundtruths_dir = 'groundtruth/'
 
     os.mkdir(dataset_dir)
     os.mkdir(train_dir)
+    os.mkdir(test_dir)
 
-    os.mkdir(videoclips_dir)
-    os.mkdir(groundtruths_dir)
+    os.mkdir(train_dir + videoclips_dir)
+    os.mkdir(test_dir + videoclips_dir)
+    os.mkdir(train_dir + groundtruths_dir)
+    os.mkdir(test_dir + groundtruths_dir)
 
     all_clips = []
-    clip_number = 0
+    train_clip_number = 0
+    test_clip_number = 0
     for subdirs, dirs, files in os.walk(path):
         for directory in dirs:
             directory_path = path + directory + "/"
             clips = parseAnnotation(directory_path + directory + ".txt")
 
-            for clip in clips:
-                clip_number += 1
+            for clip_number in range(len(clips)):
+                # Train or test (70:30)
+                if clip_number > int(0.7 * len(clips)):
+                    test_clip_number += 1
+                    train_test_dir = test_dir
+                    clip_count = test_clip_number
+                else:
+                    train_clip_number += 1
+                    train_test_dir = train_dir
+                    clip_count = train_clip_number
+
+                video_dir = train_test_dir + videoclips_dir
+                probabilities_dir = train_test_dir + groundtruths_dir
 
                 # Store clip frames and groundtruths
-                storeClip(clip, directory_path, videoclips_dir, groundtruths_dir, clip_number, crash_distance)
-                print(clip)
+                storeClip(clips[clip_number], directory_path, video_dir, probabilities_dir, clip_count, crash_distance)
+
+                print(clips[clip_number])
 
             all_clips.append(clips)
 
-    print("Clips stored : %s" % clip_number)
+    print("Train clips stored : %s" % train_clip_number)
+    print("Test clips stored : %s" % test_clip_number)
 
 
 if __name__ == '__main__':
