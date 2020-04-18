@@ -12,7 +12,7 @@ class RNN(nn.Module):
 
         self.i2h = nn.Linear(input_size + hidden_size, hidden_size)
         self.i2o = nn.Linear(input_size + hidden_size, 1)
-        self.sigmoid = nn.LogSoftmax(dim=1)
+        self.sigmoid = nn.LogSigmoid()
 
     def forward(self, input, hidden):
         combined = torch.cat((input, hidden), 1)

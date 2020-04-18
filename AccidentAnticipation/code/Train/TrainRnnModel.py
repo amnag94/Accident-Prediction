@@ -3,19 +3,21 @@
 
 import os
 import random
-
+import time
 import numpy as np
-
+import math
+import torch.optim as optim
+import torch.nn as nn
 from Feature_Extraction.VGG_16 import *
 from Feature_Extraction.Generate_Features import *
 from Train.RNN import *
 
 n_hidden = 128
-learning_rate = 0.005
 epochs = 3
 
+
 # TODO: add Exponential loss, and move it to CUDA
-def _train(video_sequence_tensor, true_value_tensor, rnn):
+def _train(video_sequence_tensor, true_value_tensor, rnn, criterion, optimizer):
     """
     This function scope is over a video clip,
     its supposed to get a video frame tensor generated using Genaret_feature
@@ -25,7 +27,8 @@ def _train(video_sequence_tensor, true_value_tensor, rnn):
     :return:
     """
     hidden = rnn.initHidden()
-    rnn.zero_grad()
+    # rnn.zero_grad()
+    optimizer.zero_grad()
 
     for i in range(video_sequence_tensor.size()[0]):
         # for ith frame in the video frame
@@ -36,9 +39,7 @@ def _train(video_sequence_tensor, true_value_tensor, rnn):
     # we want Exponential Loss here
     loss.backward()  # backpropogate
 
-    # Add parameters' gradients to their values, multiplied by learning rate
-    for p in rnn.parameters():
-        p.data.add_(-learning_rate, p.grad.data)
+    optimizer.step()
 
     return loss.item()  # return  total loss for the current video sequence
 
@@ -50,6 +51,14 @@ def train():
 
     rnn = RNN(4096, n_hidden)
 
+    # TODO: Change this later to Exponential Loss
+    criterion = nn.NLLLoss()
+
+    optimizer = optim.SGD(rnn.parameters(), lr=0.01, momentum=0.9)
+    # Keep track of losses for plotting
+    current_loss = 0
+    all_losses = []
+    start = time.time()
     for epoch in range(1, epochs + 1):
         random.shuffle(dataset)  # random the video clips (so the model does not
         # memorize anything
@@ -60,14 +69,25 @@ def train():
 
             feature_tensors = get_features_tensors_for_video_clip(video_clip)
 
-            loss = _train(feature_tensors, targets, rnn )
+            loss = _train(feature_tensors, targets, rnn , criterion, optimizer)
 
-            # print(data_item[0], data_item[1])
+            current_loss += loss
 
-            # manage some print statement
-    # print some stats after every epoch
-    # save the model after every epoch
-    # use state_dict to store the model and not the entire model
+        all_losses.append(current_loss)
+        print('epochs', epochs, 'total NLL Loss in this epoch', current_loss,
+              'time since start', timeSince(start))
+        current_loss = 0
+        # Save the model
+
+    print(current_loss)# put this as an np array and store it in a file
+
+
+def timeSince(since):
+    now = time.time()
+    s = now - since
+    m = math.floor(s / 60)
+    s -= m * 60
+    return '%dm %ds' % (m, s)
 
 
 def get_video_clip_from_training_set(video_clip_path):
