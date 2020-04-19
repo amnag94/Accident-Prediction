@@ -3,7 +3,7 @@ import pandas as pd
 import shutil, os
 
 def parseAnnotation(file_annotation):
-    objects = ['Car', 'Truck', 'Bike', 'Pedestrian']
+    objects = ['Car', 'Truck', 'Bike', 'Pedestrian', 'Animal']
     clips = []
     with open(file_annotation, "r") as annotation:
         for line in annotation:
