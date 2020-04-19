@@ -2,9 +2,10 @@
 
 import torch
 from PIL import Image
-
+import  os
 from Feature_Extraction.VGG_16 import MODEL_PATH, preprocess, getModel, VGG_16
 
+import numpy as np
 
 def get_features_tensors(image):
     """
@@ -43,9 +44,49 @@ def get_features_tensors_for_video_clip(video_clip):
     return features
 
 
+def get_dataset_path():
+    #  TODO: Need to change this to load the actual dataset
+    lst = [('../../dataset/train/videoclips/clip_1/',
+            '../../dataset/train/groundtruth/clip_1.txt')]
+    return lst
+
+def get_video_clip_from_training_set(video_clip_path):
+    """
+    This function is supposed to read in from the during training,
+    a random video clip from train folder of the dataset
+
+    returns: a list of frames inside the video clip
+    """
+    frames = []
+    for filename in os.listdir(video_clip_path):
+        # put some condition so only .jfg files are read
+        if filename.endswith('.jpg'):
+            image = Image.open(video_clip_path + filename)
+            frames.append(image)
+    return frames
+
+
+def load_dataset(dataset_paths):
+    lst = []
+    print('generating features for all video clips')
+    for dataset_path in dataset_paths:
+        video_clip = get_video_clip_from_training_set(dataset_path[0])
+        print(dataset_path[0])
+        # TODO: make sure feature_tensors.device == cuda
+        feature_tensors = get_features_tensors_for_video_clip(video_clip)
+        np.savetxt( dataset_path[0] + 'feature_tensors.txt',\
+                                    feature_tensors.data.numpy())
+        break
+    print('done generating features for all video clips')
+    return lst
+
+
+
+
 if __name__ == '__main__':
-    img_path = '../../dataset/train/videoclips/clip_1/000017.jpg'
-    input_image = Image.open(img_path)
-    print(get_features_tensors(input_image).shape)
-    frames = [input_image, input_image]
-    print(get_features_tensors_for_video_clip(frames).shape)
+    load_dataset(get_dataset_path())
+
+
+
+
+
