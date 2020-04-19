@@ -135,8 +135,12 @@ def get_video_clip_from_training_set(video_clip_path):
 
 def get_dataset_path():
     #  TODO: Need to change this to load the actual dataset
-    lst = [('../../dataset/train/videoclips/clip_1/feature_tensors.txt',
-            '../../dataset/train/groundtruth/clip_1.txt')]
+    lst = []
+    for _ in range(1, 97):
+        video_path = f'../../dataset/train/videoclips/clip' \
+                     f'{_}/feature_tensors.txt'
+        target_path = f'../../dataset/train/groundtruth/clip_{_}.txt'
+    lst.append((video_path, target_path))
     return lst
 
 
