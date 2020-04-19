@@ -140,7 +140,7 @@ def get_dataset_path():
         video_path = f'../../dataset/train/videoclips/clip' \
                      f'{_}/feature_tensors.txt'
         target_path = f'../../dataset/train/groundtruth/clip_{_}.txt'
-    lst.append((video_path, target_path))
+        lst.append((video_path, target_path))
     return lst
 
 
