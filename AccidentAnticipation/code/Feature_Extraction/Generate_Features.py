@@ -48,8 +48,8 @@ def get_dataset_path():
     #  TODO: Need to change this to load the actual dataset
     lst = []
     for _ in range(1, 97):
-        video_path = f'../../dataset/train/videoclips/clip' \
-                     f'{_}/feature_tensors.txt'
+        video_path = f'../../dataset/train/videoclips/clip_' \
+                     f'{_}/'
         target_path = f'../../dataset/train/groundtruth/clip_{_}.txt'
         lst.append((video_path, target_path))
     return lst
@@ -75,12 +75,11 @@ def load_dataset(dataset_paths):
     print('generating features for all video clips')
     for dataset_path in dataset_paths:
         video_clip = get_video_clip_from_training_set(dataset_path[0])
-        print(dataset_path[0])
+        # print(dataset_path[0])
         # TODO: make sure feature_tensors.device == cuda
         feature_tensors = get_features_tensors_for_video_clip(video_clip)
-        np.savetxt( dataset_path[0] + 'feature_tensors.txt',\
+        np.savetxt(dataset_path[0] + 'feature_tensors.txt',\
                                     feature_tensors.data.numpy())
-        break
     print('done generating features for all video clips')
     return lst
 
