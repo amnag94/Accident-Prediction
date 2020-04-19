@@ -4,7 +4,7 @@ AccidentAnticipation/trained_models
 object_detection
 object_detection/data/
 .idea/
-/data
+data
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
