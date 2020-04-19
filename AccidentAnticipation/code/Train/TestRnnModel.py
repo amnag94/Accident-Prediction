@@ -42,18 +42,18 @@ def _test(video_sequence_tensor, rnn):
 
 def test():
     rnn = RNN(4096, n_hidden)
-    rnn.load_state_dict(torch.load('../../trained_models/rnn5.model'))
+    rnn.load_state_dict(torch.load(
+            '../../trained_models/rnn_optimized40.model'))
     rnn.eval()
 
     # load the dataset,
-    dataset = load_dataset()
+    dataset = get_dataset_path('trainair')
+    video_clip_target = load_dataset(dataset)
     # create the model
 
-    for data_item in dataset:
-        video_clip = get_video_clip_from_test_set(data_item[0])
-        targets = get_targets_tensor(data_item[1])
-
-        feature_tensors = get_features_tensors_for_video_clip(video_clip)
+    for data_item in video_clip_target:
+        feature_tensors = data_item[0]
+        targets = data_item[1]
 
         output = _test(feature_tensors, rnn)
         output = output.data.numpy()
@@ -83,15 +83,39 @@ def get_video_clip_from_test_set(video_clip_path):
     return frames
 
 
-def load_dataset():
-    #  TODO: Need to change this to load the actual dataset
-    lst = [('../../dataset/train/videoclips/clip_1/',
-            '../../dataset/train/groundtruth/clip_1.txt'),
-           ('../../dataset/train/videoclips/clip_2/',
-            '../../dataset/train/groundtruth/clip_2.txt')
-           ]
-    return lst
+def get_dataset_path(test_train):
+    if test_train == 'test':
+        #  TODO: Need to change this to load the actual dataset
+        lst = []
+        for _ in range(1, 30):
+            video_path = f'../../dataset/test/videoclips/clip_' \
+                         f'{_}/feature_tensors.txt'
+            target_path = f'../../dataset/test/groundtruth/clip_{_}.txt'
+            lst.append((video_path, target_path))
+        return lst
+    else:
+        #  TODO: Need to change this to load the actual dataset
+        lst = []
+        for _ in range(1, 30):
+            video_path = f'../../dataset/train/videoclips/clip_' \
+                         f'{_}/feature_tensors.txt'
+            target_path = f'../../dataset/train/groundtruth/clip_{_}.txt'
+            lst.append((video_path, target_path))
+        return lst
 
+
+def load_dataset(dataset_paths):
+    #  TODO: Need to change this to load the actual dataset
+    lst = []
+    print('generating features for all video clips')
+    for dataset_path in dataset_paths:
+        video_clip = np.loadtxt(dataset_path[0], dtype=np.float32)
+        targets = get_targets_tensor(dataset_path[1])
+        # TODO: make sure feature_tensors.device == cuda
+        feature_tensors = torch.from_numpy(video_clip)
+        lst.append((feature_tensors, targets))
+    print('done generating features for all video clips', len(lst))
+    return lst
 
 def get_targets_tensor(file_path):
     targets = np.loadtxt(file_path, dtype = np.float32)
