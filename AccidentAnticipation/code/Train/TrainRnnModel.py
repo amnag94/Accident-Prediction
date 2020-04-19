@@ -55,10 +55,10 @@ def load_dataset(dataset_paths):
     lst = []
     print('generating features for all video clips')
     for dataset_path in dataset_paths:
-        video_clip = get_video_clip_from_training_set(dataset_path[0])
+        video_clip = np.loadtxt(dataset_path[0], dtype = np.float32)
         targets = get_targets_tensor(dataset_path[1])
         # TODO: make sure feature_tensors.device == cuda
-        feature_tensors = get_features_tensors_for_video_clip(video_clip)
+        feature_tensors = torch.from_numpy(video_clip)
         lst.append((feature_tensors, targets))
     print('done generating features for all video clips', len(lst))
     return lst
@@ -135,27 +135,8 @@ def get_video_clip_from_training_set(video_clip_path):
 
 def get_dataset_path():
     #  TODO: Need to change this to load the actual dataset
-    lst = [('../../dataset/train/videoclips/clip_1/',
-            '../../dataset/train/groundtruth/clip_1.txt'),
-           ('../../dataset/train/videoclips/clip_2/',
-            '../../dataset/train/groundtruth/clip_2.txt')
-           ,('../../dataset/train/videoclips/clip_3/',
-            '../../dataset/train/groundtruth/clip_3.txt')
-        , ('../../dataset/train/videoclips/clip_4/',
-           '../../dataset/train/groundtruth/clip_4.txt')
-        , ('../../dataset/train/videoclips/clip_5/',
-           '../../dataset/train/groundtruth/clip_5.txt'),
-           ('../../dataset/train/videoclips/clip_6/',
-            '../../dataset/train/groundtruth/clip_6.txt')
-        , ('../../dataset/train/videoclips/clip_7/',
-           '../../dataset/train/groundtruth/clip_7.txt')
-        , ('../../dataset/train/videoclips/clip_8/',
-           '../../dataset/train/groundtruth/clip_8.txt')
-        , ('../../dataset/train/videoclips/clip_9/',
-           '../../dataset/train/groundtruth/clip_9.txt')
-        , ('../../dataset/train/videoclips/clip_10/',
-           '../../dataset/train/groundtruth/clip_10.txt')
-           ]
+    lst = [('../../dataset/train/videoclips/clip_1/feature_tensors.txt',
+            '../../dataset/train/groundtruth/clip_1.txt')]
     return lst
 
 
