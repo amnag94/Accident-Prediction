@@ -12,14 +12,14 @@ class RNN(nn.Module):
 
         self.i2h = nn.Linear(input_size + hidden_size, hidden_size)
         self.i2o = nn.Linear(input_size + hidden_size, 1)
-        self.sigmoid = nn.LogSigmoid()
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, input, hidden):
-        combined = torch.cat((input, hidden), 1)
+        combined = torch.cat((input, hidden))
         hidden = self.i2h(combined)
         output = self.i2o(combined)
         output = self.sigmoid(output)
         return output, hidden
 
     def initHidden(self):
-        return torch.zeros(1, self.hidden_size)
+        return torch.zeros(self.hidden_size)
