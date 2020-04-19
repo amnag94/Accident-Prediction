@@ -54,6 +54,20 @@ def get_dataset_path():
         lst.append((video_path, target_path))
     return lst
 
+
+
+def get_dataset_path_test():
+    #  TODO: Need to change this to load the actual dataset
+    lst = []
+    for _ in range(1, 30):
+        video_path = f'../../dataset/test/videoclips/clip_' \
+                     f'{_}/'
+        target_path = f'../../dataset/test/groundtruth/clip_{_}.txt'
+        lst.append((video_path, target_path))
+    return lst
+
+
+
 def get_video_clip_from_training_set(video_clip_path):
     """
     This function is supposed to read in from the during training,
@@ -80,6 +94,7 @@ def load_dataset(dataset_paths):
         feature_tensors = get_features_tensors_for_video_clip(video_clip)
         np.savetxt(dataset_path[0] + 'feature_tensors.txt',\
                                     feature_tensors.data.numpy())
+        print(dataset_path[0])
     print('done generating features for all video clips')
     return lst
 
@@ -87,7 +102,10 @@ def load_dataset(dataset_paths):
 
 
 if __name__ == '__main__':
-    load_dataset(get_dataset_path())
+    # For traing
+    # load_dataset(get_dataset_path_test())
+    # For Testing
+    load_dataset(get_dataset_path_test())
 
 
 
