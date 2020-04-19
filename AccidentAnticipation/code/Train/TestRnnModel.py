@@ -1,5 +1,5 @@
 # Author : Ketan Kokane <kk7471@rit.edu>
-
+from sklearn.metrics import classification_report
 
 import os
 import random
@@ -16,7 +16,7 @@ epochs = 3
 
 
 # TODO: add Exponential loss, and move it to CUDA
-def _test(video_sequence_tensor, true_value_tensor, rnn):
+def _test(video_sequence_tensor, rnn):
     """
     This function scope is over a video clip,
     its supposed to get a video frame tensor generated using Genaret_feature
@@ -26,47 +26,45 @@ def _test(video_sequence_tensor, true_value_tensor, rnn):
     :return:
     """
     hidden = rnn.initHidden()
-    rnn.zero_grad()
-
+    prediction_list = []
     for i in range(video_sequence_tensor.size()[0]):
         # for ith frame in the video frame
         prediction_tensor, hidden = rnn(video_sequence_tensor[i], hidden)
+        prediction_list.append(prediction_tensor)
+        # get prediction for every frame
+    prediction_tensor = torch.cat(prediction_list)
     # get prediction for every frame
 
-    loss = criterion(prediction_tensor, true_value_tensor)
-    # we want Exponential Loss here
-    loss.backward()  # backpropogate
+    prediction_tensor.data.numpy()
 
-    # Add parameters' gradients to their values, multiplied by learning rate
-    for p in rnn.parameters():
-        p.data.add_(-learning_rate, p.grad.data)
-
-    return loss.item()  # return  total loss for the current video sequence
+    return prediction_tensor  # return  total loss for the current video sequence
 
 
 def test():
+    rnn = RNN(4096, n_hidden)
+    rnn.load_state_dict(torch.load('../../trained_models/rnn5.model'))
+    rnn.eval()
+
     # load the dataset,
     dataset = load_dataset()
     # create the model
 
-    rnn = RNN(4096, n_hidden)
+    for data_item in dataset:
+        video_clip = get_video_clip_from_test_set(data_item[0])
+        targets = get_targets_tensor(data_item[1])
 
-    for epoch in range(1, epochs + 1):
-        random.shuffle(dataset)  # random the video clips (so the model does not
-        # memorize anything
+        feature_tensors = get_features_tensors_for_video_clip(video_clip)
 
-        for data_item in dataset:
-            video_clip = get_video_clip_from_test_set(data_item[0])
-            targets = get_targets(data_item[1])
+        output = _test(feature_tensors, rnn)
+        output = output.data.numpy()
+        output[output >= 0.50] = 1
+        output[output < 0.50] = 0
+        output = output.astype(int)
 
-            feature_tensors = get_features_tensors_for_video_clip(video_clip)
+        print('current clip accuracy = ', np.mean(output == targets))
+        print(classification_report(targets, output))
 
-            loss = _test(feature_tensors, targets, rnn)
 
-            # print(data_item[0], data_item[1])
-
-            # manage some print statement
-    # print some stats after every epoch
 
 
 def get_video_clip_from_test_set(video_clip_path):
@@ -79,20 +77,27 @@ def get_video_clip_from_test_set(video_clip_path):
     frames = []
     for filename in os.listdir(video_clip_path):
         # put some condition so only .jfg files are read
-        image = Image.open(video_clip_path + filename)
-        frames.append(image)
+        if filename.endswith('.jpg'):
+            image = Image.open(video_clip_path + filename)
+            frames.append(image)
     return frames
 
 
 def load_dataset():
-    lst = [('clip1', 'clip1targets.txt'),
-           ('clip2', 'clip2targets.txt'),
-           ('clip3', 'clip3targets.txt')]
+    #  TODO: Need to change this to load the actual dataset
+    lst = [('../../dataset/train/videoclips/clip_1/',
+            '../../dataset/train/groundtruth/clip_1.txt'),
+           ('../../dataset/train/videoclips/clip_2/',
+            '../../dataset/train/groundtruth/clip_2.txt')
+           ]
     return lst
 
 
-def get_targets(file_path):
-    return np.array([0, 0, 0, 0, 1, 1, 1])
+def get_targets_tensor(file_path):
+    targets = np.loadtxt(file_path, dtype = np.float32)
+    targets = targets.astype(int)
+    return targets
+
 
 
 if __name__ == '__main__':
