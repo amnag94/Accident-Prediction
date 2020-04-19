@@ -51,11 +51,24 @@ def _train(video_sequence_tensor, true_value_tensor, rnn, criterion, optimizer):
     return loss.item()  # return  total loss for the current video sequence
 
 
+def load_dataset(dataset_paths):
+    lst = []
+    print('generating features for all video clips')
+    for dataset_path in dataset_paths:
+        video_clip = get_video_clip_from_training_set(dataset_path[0])
+        targets = get_targets_tensor(dataset_path[1])
+        # TODO: make sure feature_tensors.device == cuda
+        feature_tensors = get_features_tensors_for_video_clip(video_clip)
+        lst.append((feature_tensors, targets))
+    print('done generating features for all video clips', len(lst))
+    return lst
+
+
 def train():
     # load the dataset,
-    dataset = load_dataset()
+    dataset = get_dataset_path()
     # create the model
-
+    video_clip_target = load_dataset(dataset)
     rnn = RNN(4096, n_hidden)
 
     # TODO: Change this later to Exponential Loss
@@ -66,15 +79,15 @@ def train():
     current_loss = 0
     all_losses = []
     start = time.time()
+
+
     for epoch in range(1, epochs + 1):
-        random.shuffle(dataset)  # random the video clips (so the model does not
+        random.shuffle(video_clip_target)  # random the video clips (so the model does not
         # memorize anything
 
-        for data_item in dataset:
-            video_clip = get_video_clip_from_training_set(data_item[0])
-            targets = get_targets_tensor(data_item[1])
-            # TODO: make sure feature_tensors.device == cuda
-            feature_tensors = get_features_tensors_for_video_clip(video_clip)
+        for data_item in video_clip_target:
+            feature_tensors = data_item[0]
+            targets = data_item[1]
 
             loss = _train(feature_tensors, targets, rnn , criterion, optimizer)
 
@@ -85,7 +98,8 @@ def train():
               'time since start=', timeSince(start))
         current_loss = 0
         # Save the model
-        torch.save(rnn.state_dict(), '../../trained_models/rnn' + str(epoch) +
+        torch.save(rnn.state_dict(), '../../trained_models/rnn_optimized' + str(
+                epoch) +
                    '.model')
 
     # print(current_loss)# put this as an np array and store it in a file
@@ -119,7 +133,7 @@ def get_video_clip_from_training_set(video_clip_path):
     return frames
 
 
-def load_dataset():
+def get_dataset_path():
     #  TODO: Need to change this to load the actual dataset
     lst = [('../../dataset/train/videoclips/clip_1/',
             '../../dataset/train/groundtruth/clip_1.txt'),
