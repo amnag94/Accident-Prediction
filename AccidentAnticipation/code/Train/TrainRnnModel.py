@@ -19,7 +19,7 @@ import matplotlib.ticker as ticker
 
 n_hidden = 128
 epochs = 5
-
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # TODO: add Exponential loss, and move it to CUDA
 def _train(video_sequence_tensor, true_value_tensor, rnn, criterion, optimizer):
@@ -56,9 +56,11 @@ def load_dataset(dataset_paths):
     print('generating features for all video clips')
     for dataset_path in dataset_paths:
         video_clip = np.loadtxt(dataset_path[0], dtype = np.float32)
+        feature_tensors = torch.from_numpy(video_clip).to(device = device)
+
         targets = get_targets_tensor(dataset_path[1])
         # TODO: make sure feature_tensors.device == cuda
-        feature_tensors = torch.from_numpy(video_clip)
+
         lst.append((feature_tensors, targets))
     print('done generating features for all video clips', len(lst))
     return lst
@@ -145,7 +147,7 @@ def get_dataset_path():
 
 
 def get_targets_tensor(file_path):
-    return torch.from_numpy(np.loadtxt(file_path, dtype = np.float32) )
+    return torch.from_numpy(np.loadtxt(file_path, dtype = np.float32)).to(device = device)
 
 
 if __name__ == '__main__':
