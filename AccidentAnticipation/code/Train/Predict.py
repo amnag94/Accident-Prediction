@@ -40,7 +40,6 @@ def predict():
     hidden_state = torch.zeros(128, dtype=torch.int32)
 
     # plt.ion()
-
     for image_frame in frames:
         feature_tensor = get_features_tensors(image_frame)
         print(feature_tensor.shape)
@@ -49,7 +48,7 @@ def predict():
         # plt.close()
         # plt.imshow(image_frame)
         if accident_proba > 0.90:
-            print('Accident Happened')
+            print('Accident Predicted in next x frames')
             break
         # plt.show()
 
